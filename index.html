@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五十音修練大廳</title>
+    <style>
+        :root {
+            /* 淺色優雅風格 */
+            --hub-bg: #f7f9fc;
+            --card-bg: #ffffff;
+            --accent: #B8A47E; /* 典雅金棕色 */
+            --accent-hover: #9c8965;
+            --text-main: #334155;
+            --text-sub: #64748b;
+            --card-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Microsoft JhengHei', sans-serif;
+            background-color: var(--hub-bg);
+            background-image: radial-gradient(circle at top right, #ffffff 0%, #f0f4f8 100%);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* === 主內容區 === */
+        #main-content {
+            flex: 1;
+            position: relative;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .hub-header { text-align: center; margin-bottom: 40px; }
+        .hub-header h1 {
+            font-size: 2.5rem; margin: 0;
+            color: var(--accent);
+            letter-spacing: 3px;
+        }
+        .hub-header p { color: var(--text-sub); font-size: 1.1rem; margin-top: 10px; }
+
+        .category-title {
+            width: 100%; max-width: 1000px;
+            color: var(--text-main); font-size: 1.3rem;
+            margin: 20px auto 15px; text-align: left;
+            border-left: 5px solid var(--accent);
+            padding-left: 12px; font-weight: bold;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px; width: 100%; max-width: 1000px;
+            margin-bottom: 20px;
+        }
+
+        .game-card {
+            background: var(--card-bg);
+            border-radius: 16px; padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 2px solid transparent;
+            box-shadow: var(--card-shadow);
+            display: flex; align-items: center; gap: 15px;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 15px 30px rgba(184, 164, 126, 0.15);
+        }
+
+        .game-icon { font-size: 3rem; margin: 0; flex-shrink: 0; }
+        .game-info { display: flex; flex-direction: column; gap: 6px; }
+        .game-title { font-size: 1.2rem; font-weight: bold; margin: 0; color: var(--text-main); }
+        .game-desc { font-size: 0.9rem; color: var(--text-sub); margin: 0; line-height: 1.4; }
+        .module-tag {
+            font-size: 0.8rem; font-weight: bold; padding: 3px 10px;
+            border-radius: 20px; display: inline-block;
+            background: rgba(184, 164, 126, 0.1); color: var(--accent);
+        }
+
+        /* === 遊戲執行介面 === */
+        #player-screen {
+            display: none; position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 9999;
+        }
+        #game-frame { width: 100%; height: 100%; border: none; }
+        .btn-exit {
+            position: absolute; top: 20px; left: 20px;
+            background: var(--text-main); color: white;
+            border: none; padding: 12px 25px;
+            font-size: 1.1rem; font-weight: bold; border-radius: 30px;
+            cursor: pointer; z-index: 10000; transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-exit:hover { background: var(--accent); transform: scale(1.05); }
+    </style>
+</head>
+<body>
+
+    <div id="main-content">
+        <div class="hub-header">
+            <h1>五十音趣味修練大廳</h1>
+            <p>點擊下方圖示，隨時展開沒有壓力的平假名練習吧！</p>
+        </div>
+
+        <h2 class="category-title">輕鬆熱身區</h2>
+        <div class="game-grid">
+            <div class="game-card" onclick="launchGame('issun')">
+                <div class="game-icon">🛶</div>
+                <div class="game-info">
+                    <div class="game-title">一寸法師 <span class="module-tag">字形辨識</span></div>
+                    <div class="game-desc">將歪掉的五十音畫框扶正，熟悉假名輪廓！</div>
+                </div>
+            </div>
+            <div class="game-card" onclick="launchGame('poke')">
+                <div class="game-icon">👆</div>
+                <div class="game-info">
+                    <div class="game-title">抽牌挑戰 <span class="module-tag">口說朗讀</span></div>
+                    <div class="game-desc">撕開卡包！自信地看著假名唸出發音吧！</div>
+                </div>
+            </div>
+            <div class="game-card" onclick="launchGame('bdama')">
+                <div class="game-icon">🥤</div>
+                <div class="game-info">
+                    <div class="game-title">彈珠汽水 <span class="module-tag">羅馬音配對</span></div>
+                    <div class="game-desc">看羅馬拼音訂單，幫客人找出對應的假名彈珠。</div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="category-title">進階動態區</h2>
+        <div class="game-grid">
+            <div class="game-card" onclick="launchGame('gacya')">
+                <div class="game-icon">🟢</div>
+                <div class="game-info">
+                    <div class="game-title">轉轉扭蛋 <span class="module-tag">羅馬音配對</span></div>
+                    <div class="game-desc">依據角色的羅馬音需求，分配正確的假名能量球。</div>
+                </div>
+            </div>
+            <div class="game-card" onclick="launchGame('hanafuda')">
+                <div class="game-icon">🎴</div>
+                <div class="game-info">
+                    <div class="game-title">花札配對 <span class="module-tag">專注記憶</span></div>
+                    <div class="game-desc">限時將畫面上羅馬拼音與假名正確湊對！</div>
+                </div>
+            </div>
+            <div class="game-card" onclick="launchGame('bomb')">
+                <div class="game-icon">💣</div>
+                <div class="game-info">
+                    <div class="game-title">拆彈專家 <span class="module-tag">羅馬音配對</span></div>
+                    <div class="game-desc">看準羅馬拼音指令，剪斷正確的五十音電線。</div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="category-title">深度專注區</h2>
+        <div class="game-grid">
+            <div class="game-card" onclick="launchGame('omikuji')">
+                <div class="game-icon">⛩️</div>
+                <div class="game-info">
+                    <div class="game-title">抽御神籤 <span class="module-tag">字形尋寶</span></div>
+                    <div class="game-desc">從密密麻麻的籤詩中，精準找出指定的假名！</div>
+                </div>
+            </div>
+            <div class="game-card" onclick="launchGame('key')">
+                <div class="game-icon">🔐</div>
+                <div class="game-info">
+                    <div class="game-title">開鎖達人 <span class="module-tag">專注視覺</span></div>
+                    <div class="game-desc">快速算出九宮格內的指定假名數量來解鎖！</div>
+                </div>
+            </div>
+            <div class="game-card" onclick="launchGame('dasyutsu')">
+                <div class="game-icon">🏃</div>
+                <div class="game-info">
+                    <div class="game-title">密室逃脫 <span class="module-tag">瞬間記憶</span></div>
+                    <div class="game-desc">快速記下閃過的假名密碼，解開門鎖逃出大樓！</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="player-screen">
+        <button class="btn-exit" onclick="exitGame()"><span>◀</span> 結束練習，返回大廳</button>
+        <iframe id="game-frame" allowfullscreen></iframe>
+    </div>
+
+    <script>
+        const FULL_KANA = [
+            {jp:'あ', r:'a'}, {jp:'い', r:'i'}, {jp:'う', r:'u'}, {jp:'え', r:'e'}, {jp:'お', r:'o'},
+            {jp:'か', r:'ka'}, {jp:'き', r:'ki'}, {jp:'く', r:'ku'}, {jp:'け', r:'ke'}, {jp:'こ', r:'ko'},
+            {jp:'さ', r:'sa'}, {jp:'し', r:'shi'}, {jp:'す', r:'su'}, {jp:'せ', r:'se'}, {jp:'そ', r:'so'},
+            {jp:'た', r:'ta'}, {jp:'ち', r:'chi'}, {jp:'つ', r:'tsu'}, {jp:'て', r:'te'}, {jp:'と', r:'to'},
+            {jp:'な', r:'na'}, {jp:'に', r:'ni'}, {jp:'ぬ', r:'nu'}, {jp:'ね', r:'ne'}, {jp:'の', r:'no'},
+            {jp:'は', r:'ha'}, {jp:'ひ', r:'hi'}, {jp:'ふ', r:'fu'}, {jp:'へ', r:'he'}, {jp:'ほ', r:'ho'},
+            {jp:'ま', r:'ma'}, {jp:'み', r:'mi'}, {jp:'む', r:'mu'}, {jp:'め', r:'me'}, {jp:'も', r:'mo'},
+            {jp:'や', r:'ya'}, {jp:'ゆ', r:'yu'}, {jp:'よ', r:'yo'},
+            {jp:'ら', r:'ra'}, {jp:'り', r:'ri'}, {jp:'る', r:'ru'}, {jp:'れ', r:'re'}, {jp:'ろ', r:'ro'},
+            {jp:'わ', r:'wa'}, {jp:'を', r:'wo'}, {jp:'ん', r:'n'}
+        ];
+
+        function launchGame(id) {
+            const f = document.getElementById('game-frame');
+            f.removeAttribute('src');
+            const template = document.getElementById('tpl-' + id);
+            if(template) {
+                f.srcdoc = template.innerHTML;
+            }
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('player-screen').style.display = 'block';
+        }
+
+        function exitGame() {
+            document.getElementById('game-frame').src = 'about:blank';
+            document.getElementById('game-frame').removeAttribute('srcdoc');
+            document.getElementById('player-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'flex';
+        }
+    </script>
+
+    <template id="tpl-bomb">
+        <!DOCTYPE html>
+        <html lang="zh-TW">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                html, body { height: 100%; margin: 0; overflow: hidden; font-family: "Microsoft JhengHei", sans-serif; background-color: #222; color: #fff; display: flex; flex-direction: column; align-items: center; }
+                #setup-screen, #game-screen, #result-screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; }
+                .active { display: flex !important; }
+                .btn { background-color: #3498db; color: white; border: none; padding: 15px 30px; font-size: 1.5rem; cursor: pointer; border-radius: 50px; margin: 10px; font-weight: bold; transition: 0.2s; }
+                .btn:hover { background-color: #2980b9; transform: scale(1.05); }
+                #header-info { display: flex; justify-content: space-between; align-items: center; width: 90%; max-width: 800px; background: #333; padding: 15px 20px; border-radius: 10px; margin: 20px 0; }
+                #timer { font-size: 2.5rem; color: #e74c3c; font-family: monospace; font-weight: bold; }
+                #instruction-board { background: #ffffe6; color: #333; padding: 15px; border-radius: 8px; font-size: 1.5rem; font-weight: bold; width: 90%; max-width: 800px; text-align: center; border: 3px solid #f1c40f; margin-bottom: 20px; }
+                #bomb-area { position: relative; width: 90%; max-width: 800px; flex-grow: 1; background: #444; border: 8px solid #111; border-radius: 15px; margin-bottom: 20px; }
+                .wire { position: absolute; display: flex; align-items: center; justify-content: center; cursor: crosshair; }
+                .wire.horizontal { width: 100%; height: 20px; left: 0; flex-direction: row; }
+                .wire.horizontal .head { left: 10px; position: absolute; }
+                .wire.vertical { width: 20px; height: 100%; top: 0; flex-direction: column; }
+                .wire.vertical .head { top: 10px; position: absolute; }
+                .line { box-sizing: border-box; border-radius: 2px; width: 100%; height: 100%; }
+                .head { width: 40px; height: 40px; background: #eee; border-radius: 50%; color: #000; font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; justify-content: center; border: 3px solid #777; z-index: 10; }
+                .cut .line { opacity: 0; } .cut .head { opacity: 0.3; }
+                .romaji-highlight { background: #333; color: #fff; padding: 2px 8px; border-radius: 5px; font-family: monospace; }
+            </style>
+        </head>
+        <body>
+            <div id="setup-screen" class="active">
+                <h1 style="font-size: 3rem; margin-bottom: 10px;">💣 五十音拆彈專家 💣</h1>
+                <p style="font-size: 1.5rem; color:#aaa; margin-bottom:30px;">看著羅馬拼音指令，剪斷正確的電線吧！</p>
+                <button class="btn" onclick="startGame()">開始拆彈練習</button>
+            </div>
+            <div id="game-screen">
+                <div id="header-info">
+                    <span style="font-size: 1.5rem;">進度：<span id="progress-text">0 / 3</span> 顆炸彈</span>
+                    <span id="timer">60.0</span>
+                    <span style="font-size: 1.5rem;">剩餘機會：<span id="lives">❤️❤️❤️</span></span>
+                </div>
+                <div id="instruction-board">準備中...</div>
+                <div id="bomb-area"></div>
+            </div>
+            <div id="result-screen">
+                <h1 id="result-title" style="font-size: 4rem;">練習結束</h1>
+                <p id="result-msg" style="font-size: 1.5rem; margin-bottom: 30px;"></p>
+                <button class="btn" onclick="location.reload()">再練習一次</button>
+            </div>
+            <script>
+                const FULL_KANA = [
+                    {jp:'あ', r:'a'}, {jp:'い', r:'i'}, {jp:'う', r:'u'}, {jp:'え', r:'e'}, {jp:'お', r:'o'},
+                    {jp:'か', r:'ka'}, {jp:'き', r:'ki'}, {jp:'く', r:'ku'}, {jp:'け', r:'ke'}, {jp:'こ', r:'ko'},
+                    {jp:'さ', r:'sa'}, {jp:'し', r:'shi'}, {jp:'す', r:'su'}, {jp:'せ', r:'se'}, {jp:'そ', r:'so'},
+                    {jp:'た', r:'ta'}, {jp:'ち', r:'chi'}, {jp:'つ', r:'tsu'}, {jp:'て', r:'te'}, {jp:'と', r:'to'},
+                    {jp:'な', r:'na'}, {jp:'に', r:'ni'}, {jp:'ぬ', r:'nu'}, {jp:'ね', r:'ne'}, {jp:'の', r:'no'},
+                    {jp:'は', r:'ha'}, {jp:'ひ', r:'hi'}, {jp:'ふ', r:'fu'}, {jp:'へ', r:'he'}, {jp:'ほ', r:'ho'},
+                    {jp:'ま', r:'ma'}, {jp:'み', r:'mi'}, {jp:'む', r:'mu'}, {jp:'め', r:'me'}, {jp:'も', r:'mo'},
+                    {jp:'や', r:'ya'}, {jp:'ゆ', r:'yu'}, {jp:'よ', r:'yo'},
+                    {jp:'ら', r:'ra'}, {jp:'り', r:'ri'}, {jp:'る', r:'ru'}, {jp:'れ', r:'re'}, {jp:'ろ', r:'ro'},
+                    {jp:'わ', r:'wa'}, {jp:'を', r:'wo'}, {jp:'ん', r:'n'}
+                ];
+                const colors = ['#e74c3c', '#3498db', '#f1c40f', '#2ecc71', '#9b59b6'];
+                let lives = 3, currentBomb = 1, totalBombs = 3, timeLeft = 60, timerInterval = null, wires = [];
+                let targetKanaObj = null, targetsTotal = 0, targetsCut = 0;
+
+                function startGame() {
+                    document.getElementById('setup-screen').classList.remove('active');
+                    document.getElementById('game-screen').classList.add('active');
+                    startBomb();
+                }
+
+                function startBomb() {
+                    timeLeft = 60 + (currentBomb * 10); // 隨難度增加時間
+                    targetsCut = 0;
+                    document.getElementById('progress-text').innerText = `${currentBomb - 1} / ${totalBombs}`;
+                    updateLives(); generateBoard();
+                    clearInterval(timerInterval);
+                    timerInterval = setInterval(() => {
+                        timeLeft -= 0.1;
+                        if (timeLeft <= 0) { timeLeft = 0; gameOver(false, "時間到了，炸彈引爆！"); }
+                        document.getElementById('timer').innerText = timeLeft.toFixed(1);
+                    }, 100);
+                }
+
+                function generateBoard() {
+                    const area = document.getElementById('bomb-area');
+                    area.innerHTML = ''; wires = [];
+                    targetKanaObj = FULL_KANA[Math.floor(Math.random() * FULL_KANA.length)];
+                    let finalBoard = new Array(15);
+                    let slots = Array.from({length: 15}, (_, i) => i).sort(() => Math.random() - 0.5);
+                    
+                    // 放入 3~5 個目標
+                    targetsTotal = 3 + Math.floor(Math.random() * 3);
+                    for(let i=0; i<targetsTotal; i++) finalBoard[slots[i]] = targetKanaObj;
+                    
+                    // 填滿其他干擾
+                    for(let i=targetsTotal; i<15; i++) {
+                        let randomObj = FULL_KANA[Math.floor(Math.random() * FULL_KANA.length)];
+                        while(randomObj.jp === targetKanaObj.jp) randomObj = FULL_KANA[Math.floor(Math.random() * FULL_KANA.length)];
+                        finalBoard[slots[i]] = randomObj;
+                    }
+
+                    document.getElementById('instruction-board').innerHTML = `請剪斷所有發音為 <span class="romaji-highlight">${targetKanaObj.r}</span> 的電線！`;
+
+                    let vCount = 0, hCount = 0;
+                    for(let i=0; i<15; i++) {
+                        let data = finalBoard[i], div = document.createElement('div');
+                        div.className = 'wire';
+                        if (i < 12) { div.classList.add('vertical'); div.style.left = `${10 + (vCount * 7.5)}%`; vCount++; }
+                        else { div.classList.add('horizontal'); div.style.top = `${25 + (hCount * 25)}%`; hCount++; }
+                        
+                        let line = document.createElement('div'); line.className = 'line';
+                        line.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                        let head = document.createElement('div'); head.className = 'head'; head.innerText = data.jp;
+                        
+                        div.appendChild(line); div.appendChild(head);
+                        let wObj = { el: div, jp: data.jp, r: data.r, isCut: false };
+                        wires.push(wObj);
+                        div.onclick = () => handleCut(wObj);
+                        area.appendChild(div);
+                    }
+                }
+
+                function handleCut(wObj) {
+                    if (wObj.isCut || timeLeft <= 0) return;
+                    wObj.isCut = true; wObj.el.classList.add('cut');
+                    if (wObj.jp === targetKanaObj.jp) {
+                        targetsCut++;
+                        if (targetsCut === targetsTotal) {
+                            clearInterval(timerInterval);
+                            if (currentBomb < totalBombs) { currentBomb++; alert('這顆炸彈解除了！前往下一顆！'); startBomb(); }
+                            else { gameOver(true, "太厲害了，拆解了所有炸彈！"); }
+                        }
+                    } else {
+                        lives--; updateLives();
+                        document.body.style.backgroundColor = "#900";
+                        setTimeout(() => document.body.style.backgroundColor = "#222", 200);
+                        if (lives <= 0) gameOver(false, "剪錯電線了... 愛心歸零！");
+                    }
+                }
+
+                function updateLives() { document.getElementById('lives').innerText = "❤️".repeat(lives) + "🖤".repeat(3 - lives); }
+
+                function gameOver(win, msg) {
+                    clearInterval(timerInterval);
+                    document.getElementById('game-screen').classList.remove('active');
+                    document.getElementById('result-screen').classList.add('active');
+                    document.getElementById('result-title').innerText = win ? "🎉 任務成功 🎉" : "💥 任務失敗 💥";
+                    document.getElementById('result-title').style.color = win ? "#2ecc71" : "#e74c3c";
+                    document.getElementById('result-msg').innerText = msg;
+                }
+            </script>
+        </body>
+        </html>
+    </template>
+
+    <template id="tpl-bdama">
+        <!DOCTYPE html>
+        <html lang="zh-TW">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { font-family: '微軟正黑體', sans-serif; background-color: #f0f8ff; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+                #game-container { width: 95%; max-width: 900px; height: 90%; background: white; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; }
+                h1 { color: #4682b4; margin: 0; font-size: 2rem; text-align: center; }
+                .screen { flex-grow: 1; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+                .active { display: flex !important; }
+                .btn { background-color: #4682b4; color: white; border: none; padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; cursor: pointer; transition: 0.2s; font-weight: bold; margin-top: 20px; }
+                .btn:hover { background-color: #315f85; transform: scale(1.05); }
+                #customer-dialogue { font-size: 1.8rem; font-weight: bold; color: #4a4a4a; margin-bottom: 20px; background: #e0ffff; padding: 15px 30px; border-radius: 15px; border: 2px dashed #87ceeb; }
+                .romaji-tag { color: #ff69b4; font-family: monospace; font-size: 2.2rem; background: #fff; padding: 2px 10px; border-radius: 8px; border: 2px solid #ff69b4; }
+                #main-content { display: flex; flex-grow: 1; gap: 20px; width: 100%; min-height: 0; }
+                #marble-pool { flex: 2; display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; align-content: center; }
+                .marble { width: 100%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #fff, #87ceeb); display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; color: #1e3a8a; cursor: pointer; box-shadow: 2px 4px 8px rgba(0,0,0,0.2); border: 2px solid #fff; transition: 0.1s; user-select: none; }
+                .marble:active { transform: scale(0.9); }
+                .marble.hidden { visibility: hidden; }
+                #bottle-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 20px; }
+                #bottle-area img { height: 60%; max-height: 250px; object-fit: contain; }
+                #progress-text { font-size: 1.5rem; font-weight: bold; color: #2e8b57; margin-top: 15px; }
+            </style>
+        </head>
+        <body>
+            <div id="game-container">
+                <h1>🌟 彈珠汽水工廠</h1>
+                <div id="start-screen" class="screen active">
+                    <p style="font-size: 1.5rem; color: #666;">幫客人找出對應「羅馬拼音」的假名彈珠吧！</p>
+                    <button class="btn" onclick="startGame()">開始營業</button>
+                </div>
+                <div id="play-area" class="screen">
+                    <div id="customer-dialogue"></div>
+                    <div id="main-content">
+                        <div id="marble-pool"></div>
+                        <div id="bottle-area">
+                            <img src="Bdama-6.png" alt="汽水瓶">
+                            <div id="progress-text">完成進度：0 / 5 單</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="result-screen" class="screen">
+                    <h2 style="font-size: 2.5rem; color: #ff69b4;">本日營業結束！</h2>
+                    <p style="font-size: 1.5rem;">太棒了，你完成了所有客人的訂單！</p>
+                    <button class="btn" onclick="location.reload()">重新開業</button>
+                </div>
+            </div>
+            <script>
+                const FULL_KANA = [
+                    {jp:'あ', r:'a'}, {jp:'い', r:'i'}, {jp:'う', r:'u'}, {jp:'え', r:'e'}, {jp:'お', r:'o'},
+                    {jp:'か', r:'ka'}, {jp:'き', r:'ki'}, {jp:'く', r:'ku'}, {jp:'け', r:'ke'}, {jp:'こ', r:'ko'},
+                    {jp:'さ', r:'sa'}, {jp:'し', r:'shi'}, {jp:'す', r:'su'}, {jp:'せ', r:'se'}, {jp:'そ', r:'so'},
+                    {jp:'た', r:'ta'}, {jp:'ち', r:'chi'}, {jp:'つ', r:'tsu'}, {jp:'て', r:'te'}, {jp:'と', r:'to'},
+                    {jp:'な', r:'na'}, {jp:'に', r:'ni'}, {jp:'ぬ', r:'nu'}, {jp:'ね', r:'ne'}, {jp:'の', r:'no'},
+                    {jp:'は', r:'ha'}, {jp:'ひ', r:'hi'}, {jp:'ふ', r:'fu'}, {jp:'へ', r:'he'}, {jp:'ほ', r:'ho'},
+                    {jp:'ま', r:'ma'}, {jp:'み', r:'mi'}, {jp:'む', r:'mu'}, {jp:'め', r:'me'}, {jp:'も', r:'mo'},
+                    {jp:'や', r:'ya'}, {jp:'ゆ', r:'yu'}, {jp:'よ', r:'yo'},
+                    {jp:'ら', r:'ra'}, {jp:'り', r:'ri'}, {jp:'る', r:'ru'}, {jp:'れ', r:'re'}, {jp:'ろ', r:'ro'},
+                    {jp:'わ', r:'wa'}, {jp:'を', r:'wo'}, {jp:'ん', r:'n'}
+                ];
+                let currentCustomer = 0;
+                let targetObj = null;
+
+                function startGame() {
+                    document.getElementById('start-screen').classList.remove('active');
+                    document.getElementById('play-area').classList.add('active');
+                    currentCustomer = 0;
+                    loadCustomer();
+                }
+
+                function loadCustomer() {
+                    if (currentCustomer >= 5) {
+                        document.getElementById('play-area').classList.remove('active');
+                        document.getElementById('result-screen').classList.add('active');
+                        return;
+                    }
+                    document.getElementById('progress-text').innerText = `完成進度：${currentCustomer} / 5 單`;
+                    
+                    targetObj = FULL_KANA[Math.floor(Math.random() * FULL_KANA.length)];
+                    document.getElementById('customer-dialogue').innerHTML = `🗣️「請給我發音是 <span class="romaji-tag">${targetObj.r}</span> 的彈珠汽水！」`;
+
+                    let pool = [targetObj];
+                    while(pool.length < 15) {
+                        let rand = FULL_KANA[Math.floor(Math.random() * FULL_KANA.length)];
+                        if (!pool.includes(rand)) pool.push(rand);
+                    }
+                    pool.sort(() => Math.random() - 0.5);
+
+                    const poolDiv = document.getElementById('marble-pool');
+                    poolDiv.innerHTML = '';
+                    pool.forEach(obj => {
+                        let m = document.createElement('div');
+                        m.className = 'marble'; m.innerText = obj.jp;
+                        m.onclick = () => {
+                            if(obj.jp === targetObj.jp) {
+                                m.classList.add('hidden');
+                                currentCustomer++;
+                                setTimeout(loadCustomer, 500);
+                            } else {
+                                m.style.border = '2px solid red';
+                                setTimeout(() => m.style.border = '2px solid #fff', 300);
+                            }
+                        };
+                        poolDiv.appendChild(m);
+                    });
+                }
+            </script>
+        </body>
+        </html>
+    </template>
+
+    <template id="tpl-omikuji">
+        <!DOCTYPE html>
+        <html lang="zh-TW">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { font-family: '微軟正黑體', sans-serif; background-color: #f4ece1; text-align: center; margin: 0; padding: 20px; display: flex; align-items: center; justify-content: center; height: 100vh; box-sizing: border-box; }
+                .container { width: 100%; max-width: 600px; background: white; border: 4px solid #C63C26; border-radius: 10px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+                .screen { display: none; flex-direction: column; align-items: center; }
+                .active { display: flex; }
+                h1, h2 { color: #C63C26; margin-top: 0; }
+                .btn { background-color: #C63C26; color: white; border: none; padding: 15px 30px; font-size: 1.2rem; cursor: pointer; border-radius: 8px; margin-top: 20px; font-weight: bold; }
+                .btn:hover { background-color: #A02B18; }
+                .target-hint { font-size: 2rem; color: #D4AF37; font-weight: bold; background: #333; padding: 5px 20px; border-radius: 10px; font-family: monospace; letter-spacing: 2px;}
+                .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; font-size: 1.8rem; font-weight: bold; margin: 20px 0; background: #FDF6E3; padding: 15px; border-radius: 8px; border: 1px dashed #C63C26; cursor: pointer; user-select: none; }
+                .grid-cell { transition: 0.2s; }
+                .grid-cell.found { color: #C63C26; transform: scale(1.3); }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div id="setup-screen" class="screen active">
+                    <h1>⛩️ 神社御籤尋寶 ⛩️</h1>
+                    <p style="font-size: 1.2rem; color:#666;">根據羅馬拼音，找出籤詩裡隱藏的假名吧！</p>
+                    <button class="btn" onclick="startGame()">搖動御籤筒</button>
+                </div>
+                <div id="play-screen" class="screen">
+                    <h2>請找出發音是 <span class="target-hint" id="target-romaji"></span> 的假名！</h2>
+                    <p style="color:#888;">(點擊正確的字將它圈起來，共有 <span id="target-count"></span> 個)</p>
+                    <div id="char-grid" class="grid-container"></div>
+                </div>
+                <div id="result-screen" class="screen">
+                    <h1>🎉 大吉大利 🎉</h1>
+                    <p style="font-size: 1.5rem; color:#333;">太棒了！你找出了所有指定的假名！</p>
+                    <button class="btn" onclick="location.reload()">再抽一籤</button>
+                </div>
+            </div>
+            <script>
+                const FULL_KANA = [
+                    {jp:'あ', r:'a'}, {jp:'い', r:'i'}, {jp:'う', r:'u'}, {jp:'え', r:'e'}, {jp:'お', r:'o'},
+                    {jp:'か', r:'ka'}, {jp:'き', r:'ki'}, {jp:'く', r:'ku'}, {jp:'け', r:'ke'}, {jp:'こ', r:'ko'},
+                    {jp:'さ', r:'sa'}, {jp:'し', r:'shi'}, {jp:'す', r:'su'}, {jp:'せ', r:'se'}, {jp:'そ', r:'so'},
+                    {jp:'た', r:'ta'}, {jp:'ち', r:'chi'}, {jp:'つ', r:'tsu'}, {jp:'て', r:'te'}, {jp:'と', r:'to'},
+                    {jp:'な', r:'na'}, {jp:'に', r:'ni'}, {jp:'ぬ', r:'nu'}, {jp:'ね', r:'ne'}, {jp:'の', r:'no'},
+                    {jp:'は', r:'ha'}, {jp:'ひ', r:'hi'}, {jp:'ふ', r:'fu'}, {jp:'へ', r:'he'}, {jp:'ほ', r:'ho'},
+                    {jp:'ま', r:'ma'}, {jp:'み', r:'mi'}, {jp:'む', r:'mu'}, {jp:'め', r:'me'}, {jp:'も', r:'mo'},
+                    {jp:'や', r:'ya'}, {jp:'ゆ', r:'yu'}, {jp:'よ', r:'yo'},
+                    {jp:'ら', r:'ra'}, {jp:'り', r:'ri'}, {jp:'る', r:'ru'}, {jp:'れ', r:'re'}, {jp:'ろ', r:'ro'},
+                    {jp:'わ', r:'wa'}, {jp:'を', r:'wo'}, {jp:'ん', r:'n'}
+                ];
+                let targetObj = null;
+                let totalTarget = 0;
+                let foundTarget = 0;
+
+                function startGame() {
+                    document.getElementById('setup-screen').classList.remove('active');
+                    document.getElementById('play-screen').classList.add('active');
+                    
+                    targetObj = FULL_KANA[Math.floor(Math.random() * FULL_KANA.length)];
+                    totalTarget = 3 + Math.floor(Math.random() * 4); // 3~6 個
+                    foundTarget = 0;
+                    
+                    document.getElementById('target-romaji').innerText = targetObj.r;
+                    document.getElementById('target-count').innerText = totalTarget;
+
+                    let gridData = Array(50).fill(null);
+                    let targetIndices = [];
+                    while(targetIndices.length < totalTarget) {
+                        let r = Math.floor(Math.random() * 50);
+                        if(!targetIndices.includes(r)) targetIndices.push(r);
+                    }
+
+                    const grid = document.getElementById('char-grid');
+                    grid.innerHTML = '';
+                    for(let i=0; i<50; i++) {
+                        let charObj = targetIndices.includes(i) ? targetObj : FULL_KANA[Math.floor(Math.random() * FULL_KANA.length)];
+                        // 防止隨機抽到目標
+                        while(!targetIndices.includes(i) && charObj.jp === targetObj.jp) charObj = FULL_KANA[Math.floor(Math.random() * FULL_KANA.length)];
+                        
+                        let span = document.createElement('span');
+                        span.className = 'grid-cell';
+                        span.innerText = charObj.jp;
+                        span.onclick = function() {
+                            if(this.classList.contains('found')) return;
+                            if(charObj.jp === targetObj.jp) {
+                                this.classList.add('found');
+                                foundTarget++;
+                                if(foundTarget === totalTarget) {
+                                    setTimeout(() => {
+                                        document.getElementById('play-screen').classList.remove('active');
+                                        document.getElementById('result-screen').classList.add('active');
+                                    }, 500);
+                                }
+                            } else {
+                                this.style.color = '#ccc'; // 點錯變淡
+                            }
+                        };
+                        grid.appendChild(span);
+                    }
+                }
+            </script>
+        </body>
+        </html>
+    </template><template id="tpl-issun">
+        <!DOCTYPE html>
+        <html lang="zh-TW">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { font-family: 'Microsoft JhengHei', sans-serif; background-color: #f7f9fc; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+                #game-container { width: 90%; max-width: 600px; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 30px; text-align: center; border: 2px solid #e2e8f0; }
+                h1 { color: #B8A47E; margin-bottom: 10px; font-size: 2rem; }
+                .screen { display: none; flex-direction: column; align-items: center; }
+                .active { display: flex; }
+                .btn { background: #B8A47E; color: white; border: none; padding: 12px 30px; font-size: 1.2rem; border-radius: 30px; cursor: pointer; transition: 0.2s; font-weight: bold; margin-top: 20px; }
+                .btn:hover { background: #9c8965; transform: scale(1.05); }
+                #frame-canvas { width: 200px; height: 200px; background: #fffdf8; border: 12px solid #8b5cf6; border-radius: 15px; display: flex; justify-content: center; align-items: center; margin: 20px auto; box-shadow: 5px 5px 15px rgba(0,0,0,0.1); }
+                #kana-display { font-size: 100px; font-weight: bold; color: #333; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); user-select: none; }
+                .controls { display: flex; gap: 20px; margin-bottom: 20px; }
+                .rotate-btn { width: 60px; height: 60px; border-radius: 50%; font-size: 24px; background: #f1f5f9; color: #8b5cf6; border: 2px solid #c4b5fd; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+                .rotate-btn:hover { background: #c4b5fd; color: white; }
+                .romaji-hint { font-size: 1.5rem; color: #8b5cf6; font-family: monospace; font-weight: bold; margin-bottom: 10px; background: #f3e8ff; padding: 5px 15px; border-radius: 10px; }
+            </style>
+        </head>
+        <body>
+            <div id="game-container">
+                <div id="start-screen" class="screen active">
+                    <h1>一寸法師：畫框整理</h1>
+                    <p style="color:#64748b; font-size: 1.2rem;">這幅畫的發音是什麼呢？<br>一邊唸出來，一邊把它扶正吧！</p>
+                    <button class="btn" onclick="startGame()">開始整理</button>
+                </div>
+                <div id="game-screen" class="screen">
+                    <div style="color:#64748b; font-weight:bold; margin-bottom: 10px;">進度：<span id="progress">1 / 5</span> 幅畫</div>
+                    <div class="romaji-hint" id="romaji-display">a</div>
+                    <div id="frame-canvas"><div id="kana-display">あ</div></div>
+                    <div class="controls">
+                        <button class="rotate-btn" onclick="rotate(-30)">↺</button>
+                        <button class="rotate-btn" onclick="rotate(30)">↻</button>
+                    </div>
+                    <button class="btn" onclick="checkAnswer()">確認扶正</button>
+                </div>
+                <div id="result-screen" class="screen">
+                    <h1>✨ 整理完畢 ✨</h1>
+                    <p style="color:#64748b; font-size: 1.2rem;">所有畫框都整齊了，做得好！</p>
+                    <button class="btn" onclick="location.reload()">再練習一次</button>
+                </div>
+            </div>
+            <script>
+                const FULL_KANA = 'a,i,u,e,o,ka,ki,ku,ke,ko,sa,shi,su,se,so,ta,chi,tsu,te,to,na,ni,nu,ne,no,ha,hi,fu,he,ho,ma,mi,mu,me,mo,ya,yu,yo,ra,ri,ru,re,ro,wa,wo,n'.split(',').map((r, i) => ({r, jp: 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん'[i]}));
+                const angles = [30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+                let currentRound = 0, currentRotation = 0, currentObj = null;
+
+                function startGame() {
+                    document.getElementById('start-screen').classList.remove('active');
+                    document.getElementById('game-screen').classList.add('active');
+                    currentRound = 0; nextQuestion();
+                }
+                function nextQuestion() {
+                    if(currentRound >= 5) {
+                        document.getElementById('game-screen').classList.remove('active');
+                        document.getElementById('result-screen').classList.add('active');
+                        return;
+                    }
+                    currentObj = FULL_KANA[Math.floor(Math.random() * FULL_KANA.length)];
+                    document.getElementById('progress').innerText = `${currentRound + 1} / 5`;
+                    document.getElementById('romaji-display').innerText = currentObj.r;
+                    
+                    const kanaEl = document.getElementById('kana-display');
+                    kanaEl.style.transition = 'none';
+                    currentRotation = angles[Math.floor(Math.random() * angles.length)];
+                    kanaEl.innerText = currentObj.jp;
+                    void kanaEl.offsetWidth;
+                    kanaEl.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                    updateRotation();
+                }
+                function rotate(deg) { currentRotation += deg; updateRotation(); }
+                function updateRotation() { document.getElementById('kana-display').style.transform = `rotate(${currentRotation}deg)`; }
+                function checkAnswer() {
+                    if (currentRotation % 360 === 0) {
+                        document.getElementById('frame-canvas').style.borderColor = '#34d399';
+                        setTimeout(() => {
+                            document.getElementById('frame-canvas').style.borderColor = '#8b5cf6';
+                            currentRound++; nextQuestion();
+                        }, 500);
+                    } else {
+                        alert("畫框還是歪歪的喔，請再轉一下！");
+                    }
+                }
+            </script>
+        </body>
+        </html>
+    </template>
+
+    <template id="tpl-poke">
+        <!DOCTYPE html>
+        <html lang="zh-TW">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { margin: 0; background: #fdfbf7; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Microsoft JhengHei', sans-serif; overflow: hidden; }
+                .screen { display: none; flex-direction: column; align-items: center; text-align: center; }
+                .active { display: flex; }
+                .btn { background: #a78bfa; color: white; border: none; padding: 15px 40px; font-size: 1.2rem; border-radius: 30px; cursor: pointer; transition: 0.2s; font-weight: bold; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                .btn:hover { background: #8b5cf6; transform: scale(1.05); }
+                #card-container { perspective: 1000px; width: 250px; height: 350px; margin: 20px 0; cursor: pointer; }
+                .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s; }
+                .card.flipped { transform: rotateY(180deg); }
+                .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); border: 4px solid #ddd6fe; }
+                .front { background: white; }
+                .back { background: #faf5ff; transform: rotateY(180deg); }
+                .kana-text { font-size: 6rem; color: #4c1d95; font-weight: bold; line-height: 1; }
+                .romaji-text { font-size: 3rem; color: #8b5cf6; font-family: monospace; font-weight: bold; margin-top: 20px; }
+                .hint-text { color: #94a3b8; font-size: 1.1rem; margin-top: 20px; }
+            </style>
+        </head>
+        <body>
+            <div id="start-screen" class="screen active">
+                <h1 style="color: #4c1d95;">五十音閃卡大挑戰</h1>
+                <p style="color: #64748b; font-size: 1.2rem;">試著大聲唸出卡牌上的假名，<br>點擊卡牌即可翻面檢查羅馬拼音！</p>
+                <button class="btn" onclick="startGame()">開始抽卡</button>
+            </div>
+            <div id="game-screen" class="screen">
+                <div style="font-weight:bold; color:#64748b; font-size: 1.2rem;">第 <span id="progress">1</span> 張</div>
+                <div id="card-container" onclick="flipCard()">
+                    <div class="card" id="active-card">
+                        <div class="face front"><div class="kana-text" id="front-kana">あ</div></div>
+                        <div class="face back">
+                            <div class="kana-text" id="back-kana">あ</div>
+                            <div class="romaji-text" id="back-romaji">a</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hint-text">💡 點擊卡牌翻面</div>
+                <button class="btn" onclick="nextCard()" id="next-btn" style="display:none; background:#B8A47E;">下一張</button>
+            </div>
+            <script>
+                const FULL_KANA = 'a,i,u,e,o,ka,ki,ku,ke,ko,sa,shi,su,se,so,ta,chi,tsu,te,to,na,ni,nu,ne,no,ha,hi,fu,he,ho,ma,mi,mu,me,mo,ya,yu,yo,ra,ri,ru,re,ro,wa,wo,n'.split(',').map((r, i) => ({r, jp: 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん'[i]}));
+                let currentRound = 1;
+                
+                function startGame() {
+                    document.getElementById('start-screen').classList.remove('active');
+                    document.getElementById('game-screen').classList.add('active');
+                    currentRound = 1; loadCard();
+                }
+                function loadCard() {
+                    document.getElementById('progress').innerText = currentRound;
+                    document.getElementById('next-btn').style.display = 'none';
+                    const card = document.getElementById('active-card');
+                    card.classList.remove('flipped');
+                    
+                    setTimeout(() => {
+                        let obj = FULL_KANA[Math.floor(Math.random() * FULL_KANA.length)];
+                        document.getElementById('front-kana').innerText = obj.jp;
+                        document.getElementById('back-kana').innerText = obj.jp;
+                        document.getElementById('back-romaji').innerText = obj.r;
+                    }, 200); // 等卡牌翻回正面再換字
+                }
+                function flipCard() {
+                    const card = document.getElementById('active-card');
+                    if (!card.classList.contains('flipped')) {
+                        card.classList.add('flipped');
+                        document.getElementById('next-btn').style.display = 'block';
+                    }
+                }
+                function nextCard() {
+                    currentRound++;
+                    loadCard();
+                }
+            </script>
+        </body>
+        </html>
+    </template>
+
+    <template id="tpl-gacya">
+        <!DOCTYPE html>
+        <html lang="zh-TW">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { margin: 0; background: linear-gradient(135deg, #f3e8ff 0%, #e0e7ff 100%); font-family: 'Microsoft JhengHei', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+                .screen { display: none; flex-direction: column; align-items: center; text-align: center; width: 100%; max-width: 600px; }
+                .active { display: flex; }
+                .btn { background: #8b5cf6; color: white; border: none; padding: 15px 30px; font-size: 1.2rem; border-radius: 30px; cursor: pointer; transition: 0.2s; font-weight: bold; margin: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                .btn:hover { background: #7c3aed; transform: scale(1.05); }
+                .gacha-machine { width: 200px; height: 300px; background: #fff; border-radius: 100px 100px 20px 20px; border: 5px solid #c4b5fd; position: relative; margin: 20px 0; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+                .gacha-machine::before { content: 'Gacha'; position: absolute; top: 40px; color: #ddd6fe; font-size: 1.5rem; font-weight: bold; letter-spacing: 2px; }
+                .ball-output { width: 80px; height: 80px; background: radial-gradient(circle at 30% 30%, #fbcfe8, #d8b4fe); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; color: #4c1d95; box-shadow: inset -5px -5px 10px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.2); animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+                @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+                .request-bubble { background: white; padding: 15px 30px; border-radius: 20px; font-size: 1.5rem; color: #4c1d95; border: 2px dashed #c4b5fd; margin-bottom: 10px; font-weight: bold; }
+                .romaji-highlight { font-family: monospace; color: #ec4899; font-size: 2rem; }
+                .options { display: flex; gap: 15px; margin-top: 20px; }
+                .opt-btn { background: white; border: 3px solid #ddd6fe; border-radius: 50%; width: 70px; height: 70px; font-size: 2rem; color: #6d28d9; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+                .opt-btn:hover { background: #f3e8ff; border-color: #a78bfa; transform: scale(1.1); }
+            </style>
+        </head>
+        <body>
+            <div id="start-screen" class="screen active">
+                <h1 style="color: #6d28d9;">假名扭蛋機</h1>
+                <p style="color: #64748b; font-size: 1.2rem;">客人指定了羅馬拼音，<br>請從扭蛋機轉出正確的假名給他！</p>
+                <button class="btn" onclick="startGame()">開始顧店</button>
+            </div>
+            <div id="game-screen" class="screen">
+                <div style="font-weight:bold; color:#64748b; margin-bottom: 10px;">已完成：<span id="score">0</span> 位客人</div>
+                <div class="request-bubble">請給我 <span class="romaji-highlight" id="target-romaji">a</span> 的扭蛋！</div>
+                <div class="gacha-machine">
+                    <div class="ball-output" id="ball" style="display:none;">あ</div>
+                </div>
+                <div class="options" id="options-container"></div>
+                <button class="btn" id="next-btn" style="display:none; background:#10b981;" onclick="nextCustomer()">服務下一位</button>
+            </div>
+            <script>
+                const FULL_KANA = 'a,i,u,e,o,ka,ki,ku,ke,ko,sa,shi,su,se,so,ta,chi,tsu,te,to,na,ni,nu,ne,no,ha,hi,fu,he,ho,ma,mi,mu,me,mo,ya,yu,yo,ra,ri,ru,re,ro,wa,wo,n'.split(',').map((r, i) => ({r, jp: 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん'[i]}));
+                let currentTarget = null;
+                let score = 0;
+
+                function startGame() {
+                    document.getElementById('start-screen').classList.remove('active');
+                    document.getElementById('game-screen').classList.add('active');
+                    score = 0; document.getElementById('score').innerText = score;
+                    nextCustomer();
+                }
+
+                function nextCustomer() {
+                    document.getElementById('ball').style.display = 'none';
+                    document.getElementById('next-btn').style.display = 'none';
+                    document.getElementById('options-container').style.display = 'flex';
+                    
+                    let shuffled = [...FULL_KANA].sort(() => 0.5 - Math.random());
+                    let options = shuffled.slice(0, 3);
+                    currentTarget = options[Math.floor(Math.random() * 3)];
+                    
+                    document.getElementById('target-romaji').innerText = currentTarget.r;
+                    
+                    const optContainer = document.getElementById('options-container');
+                    optContainer.innerHTML = '';
+                    options.forEach(opt => {
+                        let btn = document.createElement('div');
+                        btn.className = 'opt-btn';
+                        btn.innerText = opt.jp;
+                        btn.onclick = () => selectGacha(opt, btn);
+                        optContainer.appendChild(btn);
+                    });
+                }
+
+                function selectGacha(opt, btnEl) {
+                    if (opt.jp === currentTarget.jp) {
+                        document.getElementById('options-container').style.display = 'none';
+                        const ball = document.getElementById('ball');
+                        ball.innerText = opt.jp;
+                        ball.style.display = 'flex';
+                        score++; document.getElementById('score').innerText = score;
+                        document.getElementById('next-btn').style.display = 'block';
+                    } else {
+                        btnEl.style.backgroundColor = '#fee2e2';
+                        btnEl.style.borderColor = '#ef4444';
+                        btnEl.style.color = '#ef4444';
+                        setTimeout(() => {
+                            btnEl.style.backgroundColor = 'white';
+                            btnEl.style.borderColor = '#ddd6fe';
+                            btnEl.style.color = '#6d28d9';
+                        }, 500);
+                    }
+                }
+            </script>
+        </body>
+        </html>
+    </template>
+
+    <template id="tpl-hanafuda">
+        <!DOCTYPE html>
+        <html lang="zh-TW">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { margin: 0; background: #faf5ff; font-family: 'Microsoft JhengHei', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+                .screen { display: none; flex-direction: column; align-items: center; text-align: center; width: 100%; max-width: 600px; }
+                .active { display: flex; }
+                h1 { color: #6d28d9; margin-bottom: 5px; }
+                .btn { background: #8b5cf6; color: white; border: none; padding: 15px 30px; font-size: 1.2rem; border-radius: 10px; cursor: pointer; transition: 0.2s; font-weight: bold; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                .btn:hover { background: #7c3aed; transform: translateY(-2px); }
+                .slot-area { display: flex; gap: 15px; margin: 20px 0; padding: 20px; background: white; border-radius: 15px; box-shadow: inset 0 4px 8px rgba(0,0,0,0.05); border: 2px dashed #c4b5fd; width: 90%; justify-content: center;}
+                .slot { width: 80px; height: 120px; background: #f3e8ff; border: 2px solid #a78bfa; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #4c1d95; font-size: 1.5rem; font-family: monospace; font-weight: bold; transition: 0.3s; }
+                .slot.active-slot { border-color: #ec4899; background: #fce7f3; transform: scale(1.05); box-shadow: 0 0 15px rgba(236, 72, 153, 0.3); }
+                .slot.solved { background: #dcfce7; border-color: #22c55e; color: #166534; }
+                .slot-kana { font-size: 2.5rem; font-family: 'Microsoft JhengHei'; color: #166534; }
+                .cards-area { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; width: 90%; }
+                .card { width: 70px; height: 100px; background: white; border: 2px solid #ddd6fe; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; color: #333; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.1s; }
+                .card:active { transform: scale(0.95); }
+                .card.disabled { opacity: 0; pointer-events: none; }
+            </style>
+        </head>
+        <body>
+            <div id="start-screen" class="screen active">
+                <h1>花札配對</h1>
+                <p style="color: #64748b; font-size: 1.1rem;">依序找出畫面上羅馬拼音對應的假名卡牌！</p>
+                <button class="btn" onclick="startGame()">開始配對</button>
+            </div>
+            <div id="game-screen" class="screen">
+                <div style="font-weight:bold; color:#64748b;">連續答對：<span id="score" style="color:#ec4899;">0</span> 組</div>
+                <div class="slot-area" id="slot-area"></div>
+                <div class="cards-area" id="cards-area"></div>
+            </div>
+            <script>
+                const FULL_KANA = 'a,i,u,e,o,ka,ki,ku,ke,ko,sa,shi,su,se,so,ta,chi,tsu,te,to,na,ni,nu,ne,no,ha,hi,fu,he,ho,ma,mi,mu,me,mo,ya,yu,yo,ra,ri,ru,re,ro,wa,wo,n'.split(',').map((r, i) => ({r, jp: 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん'[i]}));
+                let currentTargets = [];
+                let currentStep = 0;
+                let score = 0;
+
+                function startGame() {
+                    document.getElementById('start-screen').classList.remove('active');
+                    document.getElementById('game-screen').classList.add('active');
+                    score = 0; document.getElementById('score').innerText = score;
+                    nextRound();
+                }
+
+                function nextRound() {
+                    currentStep = 0;
+                    let shuffled = [...FULL_KANA].sort(() => 0.5 - Math.random());
+                    currentTargets = shuffled.slice(0, 3);
+                    
+                    const slotArea = document.getElementById('slot-area');
+                    slotArea.innerHTML = '';
+                    currentTargets.forEach((t, i) => {
+                        let div = document.createElement('div');
+                        div.className = `slot ${i === 0 ? 'active-slot' : ''}`;
+                        div.id = `slot-${i}`;
+                        div.innerText = t.r;
+                        slotArea.appendChild(div);
+                    });
+
+                    // 準備 5 張牌 (3張正確，2張干擾)
+                    let deck = [...currentTargets];
+                    let others = shuffled.slice(3);
+                    deck.push(others[0], others[1]);
+                    deck.sort(() => 0.5 - Math.random());
+
+                    const cardsArea = document.getElementById('cards-area');
+                    cardsArea.innerHTML = '';
+                    deck.forEach(d => {
+                        let card = document.createElement('div');
+                        card.className = 'card';
+                        card.innerText = d.jp;
+                        card.onclick = () => handleCardClick(card, d);
+                        cardsArea.appendChild(card);
+                    });
+                }
+
+                function handleCardClick(cardEl, dataObj) {
+                    let expected = currentTargets[currentStep];
+                    if (dataObj.jp === expected.jp) {
+                        cardEl.classList.add('disabled');
+                        let slot = document.getElementById(`slot-${currentStep}`);
+                        slot.classList.remove('active-slot');
+                        slot.classList.add('solved');
+                        slot.innerHTML = `<span class="slot-kana">${expected.jp}</span><span style="font-size:0.8rem;">${expected.r}</span>`;
+                        
+                        currentStep++;
+                        if (currentStep < 3) {
+                            document.getElementById(`slot-${currentStep}`).classList.add('active-slot');
+                        } else {
+                            score++; document.getElementById('score').innerText = score;
+                            setTimeout(nextRound, 800);
+                        }
+                    } else {
+                        cardEl.style.borderColor = 'red';
+                        cardEl.style.color = 'red';
+                        setTimeout(() => { cardEl.style.borderColor = '#ddd6fe'; cardEl.style.color = '#333'; }, 300);
+                    }
+                }
+            </script>
+        </body>
+        </html>
+    </template>
+<template id="tpl-key">
+        <!doctype html>
+        <html lang="zh-TW">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { margin: 0; background: #f8fafc; font-family: 'Microsoft JhengHei', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; color: #334155; }
+                .screen { display: none; flex-direction: column; align-items: center; text-align: center; width: 100%; max-width: 600px; }
+                .active { display: flex; }
+                h1 { color: #0ea5e9; margin-bottom: 5px; font-size: 2.2rem; }
+                .btn { background: #0ea5e9; color: white; border: none; padding: 15px 30px; font-size: 1.2rem; border-radius: 30px; cursor: pointer; transition: 0.2s; font-weight: bold; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                .btn:hover { background: #0284c7; transform: translateY(-2px); }
+                .main-layout { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 90%; }
+                .lock-section { background: white; padding: 20px 40px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; border: 2px solid #e0f2fe; }
+                .lock-icon { font-size: 4rem; margin-bottom: 10px; transition: 0.3s; }
+                .dial-display { font-size: 3.5rem; font-weight: bold; color: #0ea5e9; background: #f0f9ff; padding: 10px 30px; border-radius: 15px; border: 2px solid #bae6fd; width: 80px; text-align: center; margin: 10px 0; }
+                .dial-controls { display: flex; gap: 20px; }
+                .dial-btn { font-size: 2rem; background: #e0f2fe; border: none; color: #0284c7; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; transition: 0.2s; font-weight: bold; }
+                .dial-btn:hover { background: #bae6fd; }
+                .grid-box { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 2px dashed #bae6fd; }
+                .grid-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+                .grid-cell { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold; background: #f8fafc; border-radius: 8px; color: #475569; }
+                .target-romaji { font-size: 2rem; color: #ec4899; font-family: monospace; font-weight: bold; background: #fdf2f8; padding: 5px 15px; border-radius: 10px; border: 2px solid #fbcfe8; }
+            </style>
+        </head>
+        <body>
+            <div id="start-screen" class="screen active">
+                <h1>密碼開鎖達人</h1>
+                <p style="color: #64748b; font-size: 1.1rem; line-height: 1.5;">看羅馬拼音，精準算出下方密碼盤中<br>隱藏了多少個對應的「假名」來解鎖！</p>
+                <button class="btn" onclick="startGame()">開始解鎖</button>
+            </div>
+            <div id="game-screen" class="screen">
+                <div style="font-weight:bold; color:#64748b; margin-bottom: 10px;">已解開：<span id="score" style="color:#0ea5e9;">0</span> 道鎖</div>
+                <div class="main-layout">
+                    <div class="lock-section">
+                        <div id="lock-icon" class="lock-icon">🔒</div>
+                        <div style="font-size: 1.2rem; color: #64748b; font-weight: bold;">請找出 <span class="target-romaji" id="target-romaji">a</span> 的數量</div>
+                        <div class="dial-controls" style="align-items: center; margin-top: 10px;">
+                            <button class="dial-btn" onclick="changeCode(-1)">-</button>
+                            <div class="dial-display" id="dial-display">0</div>
+                            <button class="dial-btn" onclick="changeCode(1)">+</button>
+                        </div>
+                        <button class="btn" onclick="checkCode()" style="margin-top: 15px; width: 100%;">嘗試解鎖</button>
+                    </div>
+                    <div class="grid-box">
+                        <div class="grid-container" id="grid-container"></div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                const FULL_KANA = 'a,i,u,e,o,ka,ki,ku,ke,ko,sa,shi,su,se,so,ta,chi,tsu,te,to,na,ni,nu,ne,no,ha,hi,fu,he,ho,ma,mi,mu,me,mo,ya,yu,yo,ra,ri,ru,re,ro,wa,wo,n'.split(',').map((r, i) => ({r, jp: 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん'[i]}));
+                let currentTarget = null;
+                let correctCount = 0;
+                let currentGuess = 0;
+                let score = 0;
+
+                function startGame() {
+                    document.getElementById('start-screen').classList.remove('active');
+                    document.getElementById('game-screen').classList.add('active');
+                    score = 0; document.getElementById('score').innerText = score;
+                    nextLock();
+                }
+
+                function nextLock() {
+                    currentGuess = 0;
+                    document.getElementById('dial-display').innerText = currentGuess;
+                    document.getElementById('lock-icon').innerText = '🔒';
+                    
+                    currentTarget = FULL_KANA[Math.floor(Math.random() * FULL_KANA.length)];
+                    document.getElementById('target-romaji').innerText = currentTarget.r;
+                    
+                    correctCount = 3 + Math.floor(Math.random() * 5); // 3~7 個
+                    
+                    let gridData = Array(25).fill(null);
+                    let targetIndices = [];
+                    while(targetIndices.length < correctCount) {
+                        let r = Math.floor(Math.random() * 25);
+                        if(!targetIndices.includes(r)) targetIndices.push(r);
+                    }
+
+                    const grid = document.getElementById('grid-container');
+                    grid.innerHTML = '';
+                    for(let i=0; i<25; i++) {
+                        let charObj = targetIndices.includes(i) ? currentTarget : FULL_KANA[Math.floor(Math.random() * FULL_KANA.length)];
+                        while(!targetIndices.includes(i) && charObj.jp === currentTarget.jp) {
+                            charObj = FULL_KANA[Math.floor(Math.random() * FULL_KANA.length)];
+                        }
+                        let cell = document.createElement('div');
+                        cell.className = 'grid-cell';
+                        cell.innerText = charObj.jp;
+                        grid.appendChild(cell);
+                    }
+                }
+
+                function changeCode(dir) {
+                    currentGuess = (currentGuess + dir + 15) % 15; // 0~14 循環
+                    document.getElementById('dial-display').innerText = currentGuess;
+                }
+
+                function checkCode() {
+                    const lockIcon = document.getElementById('lock-icon');
+                    if (currentGuess === correctCount) {
+                        lockIcon.innerText = '🔓';
+                        lockIcon.style.transform = 'scale(1.2)';
+                        score++; document.getElementById('score').innerText = score;
+                        setTimeout(() => {
+                            lockIcon.style.transform = 'scale(1)';
+                            nextLock();
+                        }, 800);
+                    } else {
+                        lockIcon.style.transform = 'translateX(-10px)';
+                        setTimeout(() => lockIcon.style.transform = 'translateX(10px)', 100);
+                        setTimeout(() => lockIcon.style.transform = 'translateX(0)', 200);
+                        alert(`密碼錯誤！請再仔細數一次「${currentTarget.jp}」的數量喔！`);
+                    }
+                }
+            </script>
+        </body>
+        </html>
+    </template>
+
+    <template id="tpl-dasyutsu">
+        <!DOCTYPE html>
+        <html lang="zh-TW">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { margin: 0; background: #0f172a; color: #e2e8f0; font-family: 'Microsoft JhengHei', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+                .screen { display: none; flex-direction: column; align-items: center; text-align: center; width: 100%; max-width: 600px; padding: 20px; box-sizing: border-box; }
+                .active { display: flex; }
+                h1 { color: #38bdf8; margin-bottom: 10px; font-size: 2.5rem; letter-spacing: 2px; }
+                .btn { background: transparent; color: #38bdf8; border: 2px solid #38bdf8; padding: 12px 40px; font-size: 1.2rem; border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: bold; margin-top: 20px; }
+                .btn:hover { background: #38bdf8; color: #0f172a; }
+                .display-panel { background: rgba(255,255,255,0.05); border: 1px solid #334155; width: 100%; height: 200px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; font-size: 6rem; font-weight: bold; letter-spacing: 20px; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.5); }
+                .input-panel { display: flex; flex-direction: column; align-items: center; width: 100%; }
+                .input-display { font-family: monospace; font-size: 3rem; letter-spacing: 15px; color: #38bdf8; min-height: 70px; border-bottom: 2px solid #38bdf8; margin-bottom: 20px; padding: 0 20px; }
+                .keyboard { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; width: 100%; max-width: 400px; }
+                .key-btn { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 15px 0; font-size: 1.5rem; font-family: monospace; border-radius: 8px; cursor: pointer; transition: 0.1s; }
+                .key-btn:active { background: #38bdf8; color: #0f172a; }
+                .key-action { background: #334155; color: #fff; grid-column: span 2; }
+            </style>
+        </head>
+        <body>
+            <div id="start-screen" class="screen active">
+                <h1>瞬間記憶逃脫</h1>
+                <p style="color: #94a3b8; font-size: 1.2rem; line-height: 1.6;">畫面會瞬間閃過「平假名」密碼。<br>請憑記憶，輸入對應的「羅馬拼音」來解開門鎖！</p>
+                <button class="btn" onclick="startGame()">開始逃脫</button>
+            </div>
+            
+            <div id="observe-screen" class="screen">
+                <h2 style="color: #38bdf8;">系統掃描中... 請記住密碼</h2>
+                <div class="display-panel" id="kana-display"></div>
+            </div>
+
+            <div id="input-screen" class="screen">
+                <h2 style="color: #94a3b8;">請輸入對應的羅馬拼音</h2>
+                <div class="input-panel">
+                    <div class="input-display" id="romaji-input"></div>
+                    <div class="keyboard" id="keyboard">
+                        </div>
+                </div>
+            </div>
+
+            <div id="result-screen" class="screen">
+                <h1 style="color: #4ade80;">🔓 解鎖成功 🔓</h1>
+                <p style="color: #94a3b8; font-size: 1.2rem;">你成功記住了密碼並輸入正確的羅馬音！</p>
+                <button class="btn" onclick="location.reload()" style="color: #4ade80; border-color: #4ade80;">前往下一關 (重玩)</button>
+            </div>
+
+            <script>
+                const FULL_KANA = 'a,i,u,e,o,ka,ki,ku,ke,ko,sa,shi,su,se,so,ta,chi,tsu,te,to,na,ni,nu,ne,no,ha,hi,fu,he,ho,ma,mi,mu,me,mo,ya,yu,yo,ra,ri,ru,re,ro,wa,wo,n'.split(',').map((r, i) => ({r, jp: 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん'[i]}));
+                let targetPassword = [];
+                let currentInput = "";
+                let targetRomajiString = "";
+
+                function initKeyboard() {
+                    const kb = document.getElementById('keyboard');
+                    const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+                    letters.forEach(l => {
+                        let btn = document.createElement('button');
+                        btn.className = 'key-btn'; btn.innerText = l;
+                        btn.onclick = () => typeChar(l);
+                        kb.appendChild(btn);
+                    });
+                    
+                    let delBtn = document.createElement('button');
+                    delBtn.className = 'key-btn key-action'; delBtn.innerText = '⌫ 刪除';
+                    delBtn.onclick = deleteChar; kb.appendChild(delBtn);
+
+                    let enterBtn = document.createElement('button');
+                    enterBtn.className = 'key-btn key-action'; enterBtn.innerText = '↵ 確認';
+                    enterBtn.style.color = '#38bdf8'; enterBtn.style.borderColor = '#38bdf8';
+                    enterBtn.onclick = checkPassword; kb.appendChild(enterBtn);
+                }
+
+                function startGame() {
+                    document.getElementById('start-screen').classList.remove('active');
+                    document.getElementById('observe-screen').classList.add('active');
+                    
+                    targetPassword = []; targetRomajiString = "";
+                    let passLength = 3; // 固定 3 個字
+                    for(let i=0; i<passLength; i++) {
+                        let obj = FULL_KANA[Math.floor(Math.random() * FULL_KANA.length)];
+                        targetPassword.push(obj.jp);
+                        targetRomajiString += obj.r;
+                    }
+                    
+                    const display = document.getElementById('kana-display');
+                    display.innerText = targetPassword.join('');
+                    
+                    // 顯示 3 秒後切換到輸入畫面
+                    setTimeout(() => {
+                        display.innerText = "";
+                        document.getElementById('observe-screen').classList.remove('active');
+                        document.getElementById('input-screen').classList.add('active');
+                        currentInput = ""; updateInputDisplay();
+                    }, 3000);
+                }
+
+                function typeChar(char) {
+                    if (currentInput.length < 10) { currentInput += char; updateInputDisplay(); }
+                }
+                function deleteChar() {
+                    currentInput = currentInput.slice(0, -1); updateInputDisplay();
+                }
+                function updateInputDisplay() {
+                    document.getElementById('romaji-input').innerText = currentInput || "_";
+                }
+
+                
+
+function checkPassword() {
+                        if (currentInput === targetRomajiString) {
+                            document.getElementById('input-screen').classList.remove('active');
+                            document.getElementById('result-screen').classList.add('active');
+                        } else {
+                            const inputDisplay = document.getElementById('romaji-input');
+                            inputDisplay.style.color = '#f43f5e';
+                            inputDisplay.style.borderBottomColor = '#f43f5e';
+                            setTimeout(() => {
+                                inputDisplay.style.color = '#38bdf8';
+                                inputDisplay.style.borderBottomColor = '#38bdf8';
+                                currentInput = ""; updateInputDisplay();
+                            }, 500);
+                            alert('密碼錯誤！請再試一次。');
+                        }
+                    }
+
+                    window.onload = initKeyboard;
+                </script>
+            </body>
+            </html>
+        </template>
+        
+    </body>
+</html>
